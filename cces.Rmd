@@ -9,17 +9,31 @@ output: html_document
 knitr::opts_chunk$set(echo = FALSE)
 library(primer.data)
 library(tidyverse)
+library(rstanarm)
+
+# Check out the raw cces tibble, especially the faminc (family income) and
+# ideology variables.
 
 x <- cces %>% 
   filter(year == 2019) %>% 
   select(state, gender, age, race, faminc, ideology) %>% 
   drop_na() %>% 
   
-  # This is an absurd hack. Do not do this, ever.
+  # This is an absurd hack. Do not do this, ever. This only works because, if
+  # you coerce factor variables into integers, the order of the factor levels is
+  # preserved. So, low numbers for faminc/ideology correspond to poorer/liberal
+  # individuals.
+  
+  # We need the variables, at least faminc, to be numeric so that we can create
+  # a statistical model using the tools we have learned.
   
   mutate(faminc = as.integer(faminc)) %>% 
   mutate(ideology = as.integer(ideology))
 
   
 ```
+
+
+*Describe the relationship between ideology and family income. How does it vary by gender? Does your conclusion change if we "adjust" for race and age?*
+
 
