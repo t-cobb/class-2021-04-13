@@ -10,6 +10,8 @@ knitr::opts_chunk$set(echo = FALSE)
 library(primer.data)
 library(tidyverse)
 library(rstanarm)
+library(tidybayes)
+library(ggdist)
 
 # Check out the raw cces tibble, especially the faminc (family income) and
 # ideology variables.
@@ -38,9 +40,99 @@ x <- cces %>%
 
 
 ## Wisdom
+- data is from the US 2006 - 2019
+- we have info for all variables (ideology, family income, gender, race, age)
+
+x %>%
+ggplot(aes(faminc, ideology)) +
+geom_jitter(alpha = 0.05) +
+geom_smooth(formula = y ~ x,
+            method = "lm")
 
 
 ## Justice
+step one is to ask, what is the form of the model? is this a linear or logistic model? 
+
+
+```{r fit_1}
+
+fit_1 <- stan_glm(formula = ideology ~ faminc,
+                  data = x,
+                  refresh = 0,
+                  seed = 334)
+                  
+                  
+print(fit_1, details = FALSE, digits = 3)
+
+```
+
+As family income increases, the ideology decreases slightly (becomes more liberal)
+
+here's our formula:
+
+$$ideology_i = \beta_0  + \beta_1 faminc + \epsilon_i$$
+beta0: when income is 0, ideology is 3.74 (left of center)
+beta1: slope, predictive claim: when comparing two different families, the one that's richer is going to be a bit more liberal (by a margin of .047)
+
+note: if there hasn't been an experiment, we should be careful about making causal claims
+
+
+
+```{r fit 2}
+
+fit_2 <- stan_glm(formula = ideology ~ faminc + gender + faminc*gender,
+                  data = x,
+                  refresh = 0,
+                  seed = 222)
+
+print(fit_2, details = FALSE, digits = 3)
+
+```
+
+
+$$ideology_i = \beta_0  + \beta_1 faminc + \beta_2 gender + \beta_3 faminc*gender + \epsilon_i$$
+
+```{r fit_3}
+
+fit_3 <- stan_glm(data = x,
+                  ideology ~ age + race + gender +faminc + gender*faminc,
+                  refresh = 0,
+                  seed = 39)
+
+
+print(fit_3, details = FALSE, digits = 3)
+
+```
+
+
+```{r plot}
+age <- 50
+race <- c("White", "Black")
+gender <- c("Male", "Female")
+faminc <- c(1, 6, 12)
+
+newobs <- expand_grid(age, race, gender, faminc)
+
+z <- add_fitted_draws(newobs, fit_3) %>%
+  mutate(faminc = factor(faminc, levels = c(1, 6, 12)))
+
+z %>%
+  ggplot(aes(x = .value,
+             y = faminc,
+             fill = gender)) +
+  
+  stat_slab(alpha = 0.5)
+
+# check the repo for updated content here 
+
+
+
+
+
+# ignore this warning 
+
+```
+
 
 
 ## Courage
