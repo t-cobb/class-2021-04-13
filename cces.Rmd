@@ -1,0 +1,25 @@
+---
+title: "Income and Ideology"
+author: "Your Name Here"
+date: "April 13, 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(primer.data)
+library(tidyverse)
+
+x <- cces %>% 
+  filter(year == 2019) %>% 
+  select(state, gender, age, race, faminc, ideology) %>% 
+  drop_na() %>% 
+  
+  # This is an absurd hack. Do not do this, ever.
+  
+  mutate(faminc = as.integer(faminc)) %>% 
+  mutate(ideology = as.integer(ideology))
+
+  
+```
+
