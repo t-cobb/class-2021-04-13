@@ -37,3 +37,14 @@ x <- cces %>%
 *Describe the relationship between ideology and family income. How does it vary by gender? Does your conclusion change if we "adjust" for race and age?*
 
 
+## Wisdom
+
+
+## Justice
+
+
+## Courage
+
+
+## Temperance
+
