@@ -1,6 +1,6 @@
 ---
 title: "Income and Ideology"
-author: "Your Name Here"
+author: "Trevor Cobb"
 date: "April 13, 2021"
 output: html_document
 ---
